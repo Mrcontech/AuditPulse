@@ -106,6 +106,7 @@ serve(async (req: Request) => {
                 market_insights: insights.answer,
                 competitor_analysis: competitors,
                 competitive_gap: aiAnalysis.market_intelligence.competitive_gap,
+                content_gaps: aiAnalysis.content_gaps,
                 market_gap: aiAnalysis.market_intelligence.winning_strategies,
                 swot_analysis: aiAnalysis.market_intelligence.swot,
                 security_score: security.security_score,

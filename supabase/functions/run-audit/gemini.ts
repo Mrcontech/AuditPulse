@@ -42,7 +42,8 @@ export async function analyzeWithGemini(
         }
     }
     5. ux_friction_points: List of specific user experience issues.
-    6. strategic_recommendations: Top 5 priority fixes as an array of objects with 'title' and 'description'.
+    6. content_gaps: Array of objects with 'topic' (string) and 'advice' (string) identifying missing SEO opportunities.
+    7. strategic_recommendations: Top 5 priority fixes as an array of objects with 'title' and 'description'.
   `
 
     const response = await fetch(
@@ -63,9 +64,21 @@ export async function analyzeWithGemini(
     }
 
     const result = await response.json()
-    const content = result.candidates[0].content.parts[0].text
-    return JSON.parse(content)
+    let content = result.candidates[0].content.parts[0].text
+
+    // Clean potential markdown artifacts
+    content = content.replace(/^```json/, '').replace(/```$/, '').trim();
+
+    try {
+        return JSON.parse(content)
+    } catch (e) {
+        console.error("Failed to parse Gemini JSON, attempting recovery...", content);
+        // Basic recovery: if it ends with a comma before closing brace, fix it
+        const fixed = content.replace(/,(\s*[}\]])/g, '$1');
+        return JSON.parse(fixed);
+    }
 }
+
 
 export async function discoverNiche(crawlData: any, apiKey: string): Promise<string> {
     console.log(`Performing deep niche discovery with Gemini...`)
